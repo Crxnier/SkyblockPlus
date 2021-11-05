@@ -8,6 +8,7 @@ const bot = new Discord.Client({disableEveryone: true});
 const client = new Discord.Client({disableEveryone: true});
 bot.commands = new Discord.Collection();
 // const ms = require("ms");
+// test
 try{
   //Command handler
   fs.readdir("./commands/", (err, files) => {
