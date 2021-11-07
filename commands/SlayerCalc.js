@@ -5,8 +5,6 @@ const { Client, Attachment, Message, MessageEmbed } = require("discord.js");
 const moment = require('moment');
 var abbreviate = require('number-abbreviate')
 
-//Next level in how much xp needed doesn't actually work.
-
 module.exports.run = async (bot, message, args) => {
     const filter = m => m.author.id === message.author.id;
 
@@ -91,7 +89,6 @@ module.exports.run = async (bot, message, args) => {
             else if(xpNeeded.content.includes(",")){
                 xpNeeded = xpNeeded.content.replace(/,/,"")
             }
-
             xpNeeded = parseInt(xpNeeded)
         }
     }).catch(err => {
