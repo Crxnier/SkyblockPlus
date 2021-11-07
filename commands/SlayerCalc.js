@@ -5,6 +5,8 @@ const { Client, Attachment, Message, MessageEmbed } = require("discord.js");
 const moment = require('moment');
 var abbreviate = require('number-abbreviate')
 
+//Next level in how much xp needed doesn't actually work.
+
 module.exports.run = async (bot, message, args) => {
     const filter = m => m.author.id === message.author.id;
 
@@ -40,7 +42,7 @@ module.exports.run = async (bot, message, args) => {
     .setColor(randomColor)
     .setThumbnail(message.author.avatarURL())
     .setTitle("**Slayer XP Calculator**")
-    .setDescription("Cancelled")
+    .setDescription(`Cancelled! This is caused by saying "cancel" or by inputting an invalid statement`)
     .setFooter("If you notice any issues please do 's!support' and join the server for help");
 
     var xpNeeded = "";
@@ -51,7 +53,18 @@ module.exports.run = async (bot, message, args) => {
     var bossRound = "";
     var timeEstimation = "";
     var savingsQuestion = "";
+
     var cancel = "";
+    var cancel1 = "";
+    var cancel2 = "";
+    var cancel3 = "";
+    var cancel4 = "";
+
+    async function deleteMessages() {
+        await message.channel.messages.fetch({limit: 1}).then(messages => {
+            message.channel.bulkDelete(messages)
+        })
+    }
 
     msg = await message.channel.send(xpNeededEmbed)
     await message.channel.awaitMessages(filter, {
@@ -78,19 +91,25 @@ module.exports.run = async (bot, message, args) => {
             else if(xpNeeded.content.includes(",")){
                 xpNeeded = xpNeeded.content.replace(/,/,"")
             }
+
+            xpNeeded = parseInt(xpNeeded)
         }
     }).catch(err => {
         console.log(err)
     })
 
-    await message.channel.messages.fetch({limit: 1}).then(messages => {
-        message.channel.bulkDelete(messages)
-    })
+    if(!Number.isInteger(xpNeeded)){
+        cancel = 1
+    }
+
 
     if(cancel > 0){
+        deleteMessages()
         msg.edit(cancelEmbed)
+        return;
     }
     else{
+        deleteMessages()
         msg.edit(bossTierEmbed)
         await message.channel.awaitMessages(filter, {
             max: 1, 
@@ -98,7 +117,7 @@ module.exports.run = async (bot, message, args) => {
         }).then(collected => {
             if(collected.first().content.toLowerCase() === "cancel"){
                 msg.edit(cancelEmbed)
-                cancel = 1
+                cancel1 = 1
             }
             if(collected.first().content.toLowerCase() === "5"){
                 bossXp = "1500"
@@ -125,22 +144,21 @@ module.exports.run = async (bot, message, args) => {
             console.log(err)
         })
     }
-
-    await message.channel.messages.fetch({limit: 1}).then(messages => {
-        message.channel.bulkDelete(messages)
-    })
     
-    if(cancel > 0){
+    if(cancel1 > 0){
+        deleteMessages()
+        msg.edit(cancelEmbed)
         return;
     }
     else{
+        deleteMessages()
         msg.edit(killTimeEmbed)
         await message.channel.awaitMessages(filter, {
             max: 1, 
             time: 15000
         }).then(collected => {
             if(collected.first().content.toLowerCase() === "cancel"){
-                cancel = 1
+                cancel2 = 1
                 msg.edit(cancelEmbed)
             }
         runTime = collected.first().content.replace(/,/, "")
@@ -148,23 +166,22 @@ module.exports.run = async (bot, message, args) => {
         }).catch(err => {
             console.log(err)
         })
-
-        await message.channel.messages.fetch({limit: 1}).then(messages => {
-            message.channel.bulkDelete(messages)
-        })
     }
 
-    if(cancel > 0){
+    if(cancel2 > 0){
+        deleteMessages()
+        msg.edit(cancelEmbed)
         return;
     }
     else{
+        deleteMessages()
         msg.edit(aatroxQuestionEmbed)
         await message.channel.awaitMessages(filter, {
             max: 1, 
             time: 15000
         }).then(collected => {
             if(collected.first().content.toLowerCase() === "cancel"){
-                cancel = 1
+                cancel3 = 1
                 msg.edit(cancelEmbed)
                     
             }
@@ -173,11 +190,7 @@ module.exports.run = async (bot, message, args) => {
             console.log(err)
         })
     }
-    
 
-    await message.channel.messages.fetch({limit: 1}).then(messages => {
-        message.channel.bulkDelete(messages)
-    })
 
     function aatrox(){
         aatroxBossXp = bossXp * 1.25 
@@ -198,10 +211,13 @@ module.exports.run = async (bot, message, args) => {
         aatroxTime = hours.toString().padStart(2, '0') + ':' + minutes.toString().padStart(2, '0') + ':' + secondsRound.toString().padStart(2, '0');
     }
 
-    if(cancel > 0){
+    if(cancel3 > 0){
+        deleteMessages()
+        msg.edit(cancelEmbed)
         return;
     }
     else {
+        deleteMessages()
         if(aatroxQuestion.toLowerCase() === "yes"){ 
             aatrox()
             const aatroxResults = new Discord.MessageEmbed()
@@ -245,10 +261,13 @@ module.exports.run = async (bot, message, args) => {
             msg.edit(results);
     }
 
-    if(cancel > 0){
+    if(cancel4 > 0){
+        deleteMessages()
+        msg.edit(cancelEmbed)
         return;
     }
     else{
+        deleteMessages()
         message.reply("Would you like to see how much you save with Aatrox? (Yes/No)")
         await message.channel.awaitMessages(filter, {
             max: 1, 
@@ -261,10 +280,6 @@ module.exports.run = async (bot, message, args) => {
         })
     }
 
-    await message.channel.messages.fetch({limit: 2}).then(messages => {
-        message.channel.bulkDelete(messages)
-    })
-    
     if(savingsQuestion.toLowerCase() === "yes"){
         aatrox()
 
