@@ -4,8 +4,6 @@ const randomColor = ((1 << 24) * Math.random() | 0).toString(16);
 
 module.exports.run = async (bot, message, args) => {
 try{
-
-
   let totalSeconds = (bot.uptime / 1000);
   let days = Math.floor(totalSeconds / 86400);
   totalSeconds %= 86400;
